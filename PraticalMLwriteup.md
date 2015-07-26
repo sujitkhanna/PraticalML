@@ -8,11 +8,8 @@ The goal of this machine learning algorithm is to predict the manner in which th
 Analysis:
 
 Loading the Libraries:-
-
 library(caret)
-
 library(randomForest)
-
 library(rpart)
 
 
@@ -22,8 +19,11 @@ The training and testing datasets used in the analysis may be found as follows:
 We begin by loading the required libraries and reading in the training and testing datasets, assigning missing values to entries that are currently 'NA' or blank.
 
 data_train <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv"
+
 data_test <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv"
+
 download.file(url = data_train, destfile = "pml-training.csv",method = "wget")
+
 download.file(url = data_test, destfile = "pml-testing.csv",method = "wget")
 
 Loading the data:
@@ -44,7 +44,7 @@ pml.testing1[, -53] <- as.data.frame(lapply(pml.testing1[,-53],as.numeric))
 
 
 Data Splitting:-
-We now go ahead and split the data, 80% for training and 20% for testing.
+We now go ahead and split the data, 80% for training and 20% for testing
 
 set.seed(42)
 inTrain <- createDataPartition(y=pml.training1$classe, p=0.80, list=FALSE)
@@ -57,7 +57,6 @@ dim(training);dim(testing)
 We have now randomized training and equally distributed amongst the five classes of our outcome variable
 
 Model Data with Trees:
-
 We will now train a model the Classification and Regression Tree (CART) algorithm (method='rpart') and use a 10-fold cross-validation 
 
 set.seed(42)
@@ -67,17 +66,16 @@ Analysis of Trees:
 Our tree model is not better than chance. The in-sample error rate (from a 10-fold cross-validation) is 49.8% (barb.tr$results). The out-of-sample error rate is 50.2%.
 
 barb.tr$finalModel
-
-barb.tr$resample ## error rate of each fold
-barb.tr$results ## cp = complexity parameter
-
+barb.tr$resample 
+barb.tr$results 
 confusionMatrix(barb.tr)
 
-### Test the Tree Model ###
+Test the Tree Model 
+
 pred.te<- predict(barb.tr,newdata=testing)
 testing$predtrRight <- pred.te==testing$classe
 table(pred.te,testing$classe)
-1-sum(testing$predtrRight)/nrow(testing)  ## out of sample error rate
+1-sum(testing$predtrRight)/nrow(testing) 
 
 
 Model with Random Forest:
@@ -97,12 +95,8 @@ Train the Random Forest model (20%)
 
 set.seed(42)
 system.time( barb.rf <- train(classe ~., data=training20,method="rf",prox=TRUE) )
-####     user   system  elapsed 
-#### 3395.666   34.611 3509.028 
 barb.rf$finalModel
 varImpPlot(barb.rf$finalModel)
-
-### Get features in order of importance ###
 imp <- as.data.frame(barb.rf$finalModel$importance)
 imp <- cbind(feature = rownames(imp), imp)
 rownames(imp)<-NULL
@@ -116,8 +110,6 @@ we now Predicting the random forest model with the test set of 80%. The out-of-s
 pred <- predict(barb.rf,testing80)
 testing80$predRight <- pred==testing80$classe
 table(pred,testing80$classe)
-
-### Out-of-Sample error rate ###
 1-sum(testing80$predRight)/nrow(testing80)
 
 WE now use Random Forest Model with 80% training set but doesnt calculate proximities
@@ -125,9 +117,6 @@ WE now use Random Forest Model with 80% training set but doesnt calculate proxim
 
 set.seed(42)
 system.time( barb80.rf <- train(classe~ .,data=training,method="rf",prox=FALSE) )
-####     user   system  elapsed 
-#### 8358.456   66.568 8647.038 
-### Get features in order of importance ###
 imp80 <- as.data.frame(barb80.rf$finalModel$importance)
 imp80 <- cbind(feature = rownames(imp80), imp80)
 rownames(imp80)<-NULL
@@ -142,14 +131,12 @@ pred <- predict(barb80.rf,testing)
 testing$predRight <- pred==testing$classe
 table(pred,testing$classe)
 table(testing$predRight,testing$classe)
-### Out-of-Sample Error rate ###
 1-sum(testing$predRight)/nrow(testing)
 
 Submit Results:
 
 The Last Part of the analysis is to use the model to predict the 'classe' for testing data and submitting the results
 
-### Submission script ###
 answers <- as.character(pred)
 pml_write_files = function(x){
   n = length(x)
