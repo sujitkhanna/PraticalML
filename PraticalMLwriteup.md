@@ -1,13 +1,21 @@
 Summary:
+
 In this project, the goal is to analyze data from accelerometers on the belt, forearm, arm, and dumbell of six participants. They were asked to perform barbell lifts correctly and incorrectly in five different ways. For more information see the “Weight Lifting Exercises Dataset” in the following location:
 http://groupware.les.inf.puc-rio.br/har
 
 The goal of this machine learning algorithm is to predict the manner in which the participants did the exercise meaning  to predict the “classe” variable found in the training set. The prediction model will then be used to predict twenty different test cases, as provided in the testing dataset.
 
 Analysis:
+
 Loading the Libraries:-
 
-library(caret); library(randomForest); library(rpart)
+library(caret)
+
+library(randomForest)
+
+library(rpart)
+
+
 
 Getting Data-
 The training and testing datasets used in the analysis may be found as follows:
@@ -22,18 +30,20 @@ Loading the data:
 
 pml.training <- read.csv("pml-training.csv")
 pml.testing <- read.csv("pml-testing.csv")
-#edit(pml.training)
-#edit(pml.testing)
 
-### Cull unnecessary variables ###
+Cull unnecessary variables
+
 except.these <- grep("kurtosis|skewness|max|min|amplitude|avg|stddev|var", names(pml.training))
 except.these <- c(except.these,c(1:7)) ## time and identification variables (X, user_name, cvtd_timestamp, raw_timestamp_part_2, new_window, num_window).
 pml.training1 <- pml.training[,-except.these]
-#View(pml.training1)
+
+View(pml.training1)
+
 sum(is.na(pml.training1))  ## Check for NAs. 0 is nice.
 pml.testing1 <- pml.testing[,-except.these]
 
-### Integer variables to numeric ###
+Integer variables to numeric
+
 which( colnames(pml.training1)=="classe" )  ## <-- classe is the outcome.
 pml.training1[, -53] <- as.data.frame(lapply(pml.training1[,-53],as.numeric))
 pml.testing1[, -53] <- as.data.frame(lapply(pml.testing1[,-53],as.numeric))
