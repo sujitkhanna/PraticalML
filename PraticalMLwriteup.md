@@ -31,26 +31,21 @@ Loading the data:
 pml.training <- read.csv("pml-training.csv")
 pml.testing <- read.csv("pml-testing.csv")
 
-Cull unnecessary variables
+Cull unnecessary variables:
 
 except.these <- grep("kurtosis|skewness|max|min|amplitude|avg|stddev|var", names(pml.training))
-except.these <- c(except.these,c(1:7)) ## time and identification variables (X, user_name, cvtd_timestamp, raw_timestamp_part_2, new_window, num_window).
+except.these <- c(except.these,c(1:7))
 pml.training1 <- pml.training[,-except.these]
-
-View(pml.training1)
-
 sum(is.na(pml.training1))  ## Check for NAs. 0 is nice.
 pml.testing1 <- pml.testing[,-except.these]
-
-Integer variables to numeric
-
-which( colnames(pml.training1)=="classe" )  ## <-- classe is the outcome.
+which( colnames(pml.training1)=="classe" )
 pml.training1[, -53] <- as.data.frame(lapply(pml.training1[,-53],as.numeric))
 pml.testing1[, -53] <- as.data.frame(lapply(pml.testing1[,-53],as.numeric))
-#str(pml.training1)
+
 
 Data Splitting:-
 We now go ahead and split the data, 80% for training and 20% for testing.
+
 set.seed(42)
 inTrain <- createDataPartition(y=pml.training1$classe, p=0.80, list=FALSE)
 training <- pml.training1[inTrain,]
